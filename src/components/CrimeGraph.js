@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import generatePDF, { Resolution, Margin } from 'react-to-pdf';
 import { Chart as ChartJS, registerables } from 'chart.js';
@@ -16,14 +16,14 @@ const CrimeGraph = () => {
 
   const targetRef = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
 
       const { data } = await axios.get(
         'https://api.usa.gov/crime/fbi/cde/arrest/state/AK/all?from=2015&to=2020&API_KEY=iiHnOKfno2Mgkt5AynpvPpUQTEyxE77jo1RU8PIv'
       );
-      console.log('data --> ', data.data);
+      // console.log('data --> ', data);
 
       setCrimeData(data.data);
       setChartReady(true);
@@ -36,45 +36,35 @@ const CrimeGraph = () => {
   const options = {
     // default is `save`
     method: 'open',
-    // default is Resolution.MEDIUM = 3, which should be enough, higher values
-    // increases the image quality but also the size of the PDF, so be careful
-    // using values higher than 10 when having multiple pages generated, it
-    // might cause the page to crash or hang.
+    filename: 'crime_graph.pdf',
     resolution: Resolution.HIGH,
     page: {
-      // margin is in MM, default is Margin.NONE = 0
       margin: Margin.SMALL,
-      // default is 'A4'
       format: 'letter',
-      // default is 'portrait'
       orientation: 'landscape',
     },
     canvas: {
-      // default is 'image/jpeg' for better size performance
       mimeType: 'image/png',
       qualityRatio: 1,
     },
-    // Customize any value passed to the jsPDF instance and html2canvas
-    // function. You probably will not need this and things can break,
-    // so use with caution.
     overrides: {
-      // see https://artskydj.github.io/jsPDF/docs/jsPDF.html for more options
       pdf: {
         compress: true,
       },
-      // see https://html2canvas.hertzen.com/configuration for more options
       canvas: {
         useCORS: true,
       },
     },
   };
 
-  // React.useEffect(() => {
-  //   // Generate PDF when chartReady is true and data is available
-  //   if (chartReady && crimeData.length > 0) {
-  //     generatePDF(targetRef, options);
-  //   }
-  // }, [chartReady, crimeData]);
+  useEffect(() => {
+    // Generate PDF with a 2-second delay when chartReady is true and data is available
+    if (chartReady && crimeData.length > 0) {
+      setTimeout(() => {
+        generatePDF(targetRef, options);
+      }, 1000); // 2000 milliseconds (2 seconds)
+    }
+  }, [chartReady, crimeData]);
 
   // Extract and structure data for the line chart
   const years = crimeData && crimeData.map((entry) => entry.data_year);
@@ -124,7 +114,7 @@ const CrimeGraph = () => {
   return (
     <div className="flex items-center justify-center w-full">
       {loading ? (
-        <span>Loading data...</span>
+        <span className="my-[30%]">Loading data...</span>
       ) : (
         <div className="w-full p-3 md:p-5 flex flex-col gap-5" ref={targetRef}>
           <div className="flex items-center">
@@ -147,9 +137,14 @@ const CrimeGraph = () => {
 
           <div className="w-full gap-3">
             <GradientLine />
-            <span className="font-bold text-sm text-blue-600">
-              Report Generated on {new Date().toDateString()}
-            </span>
+            <div className="w-full flex items-center justify-between">
+              <span className="font-bold text-sm text-blue-600">
+                Report Generated on {new Date().toDateString()}
+              </span>
+              <span className="font-bold text-sm text-black">
+                RealAssist Property Report | Page 1 of 25
+              </span>
+            </div>
           </div>
         </div>
       )}
