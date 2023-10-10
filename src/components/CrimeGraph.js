@@ -34,7 +34,6 @@ const CrimeGraph = () => {
   }, []);
 
   const options = {
-    // default is `save`
     method: 'save',
     filename: 'crime_graph.pdf',
     resolution: Resolution.HIGH,
@@ -62,7 +61,7 @@ const CrimeGraph = () => {
     if (chartReady && crimeData.length > 0) {
       setTimeout(() => {
         generatePDF(targetRef, options);
-      }, 1000); // 2000 milliseconds (2 seconds)
+      }, 500);
     }
   }, [chartReady, crimeData]);
 
@@ -155,5 +154,5 @@ const CrimeGraph = () => {
 export default CrimeGraph;
 
 const GradientLine = () => (
-  <div className="h-[3px] w-full bg-gradient-to-r from-blue-600 to-blue-300"></div>
+  <div className="h-[4px] w-full bg-gradient-to-r from-blue-600 to-blue-300"></div>
 );
