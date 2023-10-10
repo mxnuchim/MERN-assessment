@@ -3,6 +3,9 @@ import React, { useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import generatePDF, { Resolution, Margin } from 'react-to-pdf';
 import { Chart as ChartJS, registerables } from 'chart.js';
+import { images } from '../assets';
+
+const { location } = images;
 
 ChartJS.register(...registerables);
 
@@ -111,7 +114,7 @@ const CrimeGraph = () => {
         display: false,
       },
       title: {
-        display: true,
+        display: false,
         text: 'Burglary',
         align: 'start',
       },
@@ -119,12 +122,35 @@ const CrimeGraph = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen w-full">
+    <div className="flex items-center justify-center w-full">
       {loading ? (
         <span>Loading data...</span>
       ) : (
-        <div className="w-full p-3 md:p-10" ref={targetRef}>
-          <Line data={lineChartData} options={chartOptions} />
+        <div className="w-full p-3 md:p-5 flex flex-col gap-5" ref={targetRef}>
+          <div className="flex items-center">
+            <div className="flex gap-2 items-center justify-cente mr-4">
+              <img src={location} alt="" className="w-6" />
+              <span className="">Crime</span>
+            </div>
+            <GradientLine />
+          </div>
+          <div className="bg-gray-100 rounded-2xl w-full items-center ">
+            <div className="rounded-t-2xl bg-blue-100 w-full flex items-center">
+              <span className="text-blue-600 py-3 font-semibold text-sm pl-5">
+                Burglary
+              </span>
+            </div>
+            <div className="rounded-2xl bg-white my-10 mx-12 p-10">
+              <Line data={lineChartData} options={chartOptions} />
+            </div>
+          </div>
+
+          <div className="w-full gap-3">
+            <GradientLine />
+            <span className="font-bold text-sm text-blue-600">
+              Report Generated on {new Date().toDateString()}
+            </span>
+          </div>
         </div>
       )}
     </div>
@@ -132,3 +158,7 @@ const CrimeGraph = () => {
 };
 
 export default CrimeGraph;
+
+const GradientLine = () => (
+  <div className="h-[3px] w-full bg-gradient-to-r from-blue-600 to-blue-300"></div>
+);
