@@ -35,7 +35,7 @@ const CrimeGraph = () => {
 
   const options = {
     // default is `save`
-    method: 'open',
+    method: 'save',
     filename: 'crime_graph.pdf',
     resolution: Resolution.HIGH,
     page: {
